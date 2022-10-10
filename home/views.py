@@ -175,8 +175,7 @@ def userPrograms(request):
 
     if query:
         obj_list = UserProgram.objects.filter(Q(user__user__icontains=query) | 
-            Q(user__username__icontains=query) | Q(program__name__icontains=query)
-        )
+            Q(user__username__icontains=query))
     else:
         obj_list = UserProgram.objects.all()
     
