@@ -1,0 +1,155 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Programs</h1>
+    <nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+        <li class="breadcrumb-item active">Programs</li>
+    </ol>
+    <ol class="d-flex justify-content-end">
+      <button class="btn btn-sm btn-outline-dark"
+      data-bs-toggle="modal" data-bs-target="#add">
+        Add +
+      </button>
+    </ol>
+    </nav>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Total Data: {{ programs.count }}</h5>
+    <form action=".">
+      <div class="input-group mb-2 mt-2">
+        <input type="text" class="form-control" placeholder="Search" 
+        value="{{query}}"
+        name="q"
+        required>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </div>
+      </div>
+    </form>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">Description</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for program in programs %}
+        <tr>
+          <th scope="row">{{ program.id }}</th>
+          <td>{{ program.name }}</td>
+          <td>{{ program.description |slice:"0:30" }}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary"
+            data-bs-toggle="modal" data-bs-target="#update{{program.id}}">
+              Edit
+            </button>
+            <button class="btn btn-sm btn-outline-danger"
+            data-bs-toggle="modal" data-bs-target="#delete{{program.id}}">
+              Delete
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+
+        {% if not programs %}
+            <tr>
+                <td>No Data found!</td>
+            </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Program</h5>
+        <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form autocomplete="off" action="." method="POST">
+              {% csrf_token %}
+              <div class="form-group mb-2">
+                <label>Program Name</label>
+                <input type="text" class="form-control" name="name" required >
+              </div>
+              <div class="form-group mb-2">
+                  <label>Program Description</label>
+                  <textarea class="form-control mb-4" name="description" required cols="30" rows="5"></textarea>
+              </div>
+             
+              <button type="submit" name="action" value="add" class="btn btn-outline-primary">Add</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% for i in programs %}
+<div class="modal fade" id="update{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update Program {{ i.name }}</h5>
+        <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form autocomplete="off" action="." method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="object_id" value="{{ i.id }}">
+              <div class="form-group mb-2">
+                <label>Program Name</label>
+                <input type="text" class="form-control" name="name" value="{{ i.name }}" required >
+              </div>
+              <div class="form-group mb-2">
+                  <label>Program Description</label>
+                  <textarea class="form-control mb-4" name="description" required cols="30" rows="5">{{ i.description }}</textarea>
+              </div>
+             
+              <button type="submit" name="action" value="update" class="btn btn-outline-primary">Update</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="delete{{i.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Delete Program {{ i.name }}</h5>
+        <button type="button" class="close btn" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form autocomplete="off" action="." method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="object_id" value="{{ i.id }}">
+              <p>Are you sure, you want to delete this item!</p>           
+              <button type="submit" name="action" value="delete" class="btn btn-outline-danger">Delete</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+
+{% endblock content %}
